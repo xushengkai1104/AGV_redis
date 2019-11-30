@@ -1,0 +1,40 @@
+https://redis.io/download
+下载redis 5.0
+下边是有安装教学的。
+
+Installation
+$ wget http://download.redis.io/releases/redis-5.0.7.tar.gz
+$ tar xzf redis-5.0.7.tar.gz
+$ cd redis-5.0.7
+$ make
+
+安装完毕后还很友好的提示你，要不要make test一下检查安装的有没有毛病。稳
+然后在这个redis-5.0.7下，运行
+src/redis-server
+可以看到版本为5.0.7
+
+但是问题是我们不能直接redis-server去运行。就很烦。然后查了一下。
+/usr/local/bin目录是给用户放置自己的可执行程序的地方，推荐放在这里，不会被系统升级而覆盖同名文件。
+注意： usr 指 Unix System Resource
+
+
+由于安装redis的时候，我们没有选择安装路径，故是默认位置安装。在此，我们可以将可执行文件和配置文件移动到习惯的目录。 
+
+比较重要的3个可执行文件：
+redis-server：Redis服务器程序
+redis-cli：Redis客户端程序，它是一个命令行操作工具。也可以使用telnet根据其纯文本协议操作。
+redis-benchmark：Redis性能测试工具，测试Redis在你的系统及配置下的读写性能
+
+所以我们尝试将这三个文件移动到/usr/local/bin。
+来达到直接运行redis-server就行。
+但是由于这个目录需要root权限。
+
+尝试使用cp copy命令
+cp命令详细请
+cp --help查看
+
+sudo cp ~/redis-5.0.7/src/redis-server /usr/local/bin/redis-server
+第一个为源目录下的文件名，第二个为目标文件夹想要设置的可执行文件名。
+测试redis-server。可直接使用。完毕。
+然后把cli和benchmark一起搞进去。
+
