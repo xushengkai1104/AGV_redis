@@ -28,3 +28,8 @@ sudo service redis stop
 
 如果当时安装的时候时apt-get Install的话。就执行如下的就行了。
 sudo apt-get purge --auto-remove redis-server
+
+然后执行
+redis-server -v.
+显示已经没了。
+
