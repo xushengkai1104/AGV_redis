@@ -26,12 +26,5 @@ kill -9 1148
 sudo service redis stop
 注意这里需要逐条关闭
 
-redis会在/usr/local/bin或你指定的目录下产生下面几个文件
-1.redis-benchmark
-2.redis-check-aof
-3.redis-check-dump
-4.redis-cli
-5.redis-server
-然后把文件删除就行了.
-命令为
-sudo rm /usr/local/bin/redis-*
+如果当时安装的时候时apt-get Install的话。就执行如下的就行了。
+sudo apt-get purge --auto-remove redis-server
