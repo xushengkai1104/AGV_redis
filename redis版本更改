@@ -19,4 +19,19 @@ kai       3636  0.0  0.0  21320   908 pts/1    S+   14:24   0:00 grep --color=au
 
 kill -9 1148
 -9为彻底杀死进程指令。注意这个要么在root下执行。要么sudo。不然操作是不允许的。
+但杀死后。
+运行ps aux|grep redis发现还是有进程。
 
+查询后发现可以使用关闭redis服务功能
+sudo service redis stop
+注意这里需要逐条关闭
+
+redis会在/usr/local/bin或你指定的目录下产生下面几个文件
+1.redis-benchmark
+2.redis-check-aof
+3.redis-check-dump
+4.redis-cli
+5.redis-server
+然后把文件删除就行了.
+命令为
+sudo rm /usr/local/bin/redis-*
