@@ -1,0 +1,9 @@
+然后运行了一下redis-server
+发现如下问题
+3586:C 03 Dec 2019 00:16:06.953 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+3586:C 03 Dec 2019 00:16:06.954 # Redis version=5.0.7, bits=64, commit=4bb41e32, modified=1, pid=3586, just started
+3586:C 03 Dec 2019 00:16:06.954 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+3586:M 03 Dec 2019 00:16:06.956 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+3586:M 03 Dec 2019 00:16:06.957 # Could not create server TCP listening socket *:6379: bind: Address already in use
+
+显示6379端口已经占用。
