@@ -7,3 +7,19 @@
 3586:M 03 Dec 2019 00:16:06.957 # Could not create server TCP listening socket *:6379: bind: Address already in use
 
 显示6379端口已经占用。
+
+首先来解决第一个问题。
+没有规定config file.
+执行：
+redis-server /etc/redis/redis.conf
+显示无法打开这个conf文件。
+Fatal error, can't open config file '/etc/redis/redis.conf'
+首先判断是不是权限的问题。
+执行sudo redis-server /etc/redis/redis.conf.可以了。
+
+但是还是不行？？
+
+后来想了一下。
+在上一篇的时候，我们已经把端口6379打开了。所以被占用是很正常的。
+所以自己傻逼了。
+
