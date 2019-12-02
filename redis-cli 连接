@@ -1,0 +1,17 @@
+ubuntu 下查看外网地址。
+1.1 安装使用curl命令实现
+      sudo apt-get install curl
+1.2 输入命令
+      curl ifconfig.me
+
+然后再添加到阿里云的白名单中。
+redis-cli -h <host> -p <port> -a password
+
+结果提示
+Temporary failure in name resolution
+名称解析暂时失败
+后来发现可能是电脑太卡了。。
+
+重新尝试后成功。
+set 
+get 均可。
