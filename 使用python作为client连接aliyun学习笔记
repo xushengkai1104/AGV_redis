@@ -1,0 +1,19 @@
+这个是阿里云提供的demo。但是十分复杂。可供参考
+https://github.com/andymccurdy/redis-py?spm=a2c4g.11186623.2.29.1a196be12lCBuy
+
+在使用之前首先弄明白什么是Nosql
+说白了非关系型数据库就是数据之间无联系，很容易耦合。结构相对于比较简单。
+
+阿里云官方给出的代码为：
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+import redis
+#这里替换为连接的实例host和port
+host = 'localhost'
+port = 6379
+#这里替换为实例password
+pwd = 'test_password'
+r = redis.StrictRedis(host=host, port=port, password=pwd)
+#连接建立后就可以进行数据库操作，详情文档参考https://github.com/andymccurdy/redis-py
+r.set('foo', 'bar');
+print r.get('foo')
