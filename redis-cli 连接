@@ -15,3 +15,5 @@ Temporary failure in name resolution
 重新尝试后成功。
 set 
 get 均可。
+
+每次登录如果外网地址改变。需要在阿里云中重新设置白名单。
