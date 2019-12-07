@@ -33,3 +33,9 @@ sudo apt-get purge --auto-remove redis-server
 redis-server -v.
 显示已经没了。
 
+
+2019.12.07补充。
+Redis断开和客户端的连接，持久化文件生成，是优雅关闭的方式。
+使用Kill -9会造成缓冲区不能被优雅的关闭。
+建议使用。
+redis-cli shutdown nosave|save
