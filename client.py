@@ -22,10 +22,34 @@ class client:
       password = raw_input('*** Enter cloud password:')
       self.r = redis.StrictRedis(host=host, port=port, password=password)
       time.sleep(1)
-      response = t.r.get("QinQin")
+      response = self.r.get("QinQin")
       print(response)
-
-   def cmd_dict()
+      cmd_dict = {
+            #当前AGV状态
+            'status': '',
+            #充电时的状态
+            'recharge_state': '',
+            #运行错误，此处应将错误信息保存至本地，并带时间戳
+            'error': '',
+            #设置当前坐标
+            'init_pose': '',
+            #设置目标点坐标×2
+            'set_goal1': '',
+            'set_goal2': '',
+            #当前坐标
+            'current_pose': '',
+            #当前速度
+            'vel_x':'',
+            'ang_z':''
+            }
+      self.r.hmset('CmdState', cmd_dict)
+      im = 1
+      #暂时设置取代rospy.is_shutdown()
+      while im == 1:
+         currentState = self.r.hget('CmdState','status')
+         print(currentState)
+         time.sleep(1)
+         
 
 # 初始化client类
 t = client()
