@@ -3,6 +3,7 @@
 import redis
 import time
 import socket
+import re
 
 print('*** client start to work')
 
@@ -11,9 +12,14 @@ host = 'r-uf6egwjn6dskz5of2fpd.redis.rds.aliyuncs.com'
 # 端口号
 port = 6379
 
-# 注意这里的str和Int的表达区别
 print('*** hostname is '+host)
 print('*** port is %d' %(port))
+
+# 错误列表
+error_dict = {
+   u'非法指令':'Command is invalid',
+   u'哈希表不存在':'ControlCom not exist'
+   }
 
 class client:
 
@@ -26,7 +32,8 @@ class client:
       
       # timeout 1s
       time.sleep(1)
-      
+
+   def redis_info(self):
       info_dict = {
          # 位姿
          'position_x':'',
@@ -42,10 +49,14 @@ class client:
          'error':''
             }
       self.r.hmset('agv_info', info_dict)
+
+      # 获取服务器当前时间
+      print('*** Start_time is： ' +time.asctime(time.localtime(time.time())))
       
       im = 1
       #暂时设置 im 取代rospy.is_shutdown()
       while im == 1:
+         time_now = time.asctime(time.localtime(time.time()))
          currentState = self.r.get('Status')
          print('*** AGV_state is : '+currentState)
 
@@ -56,19 +67,23 @@ class client:
                point2 = self.r.hget('ControlCom','point2')
                operate = self.r.hget('ControlCom','operate')
                print(point1,point2,operate)
-               #此条为过渡指令
                self.r.hset('agv_info','error','')
             else:
-               self.r.hset('agv_info','error','Hashtable: ControlCom not exist')
+               # 判断与上一条错误消息是否相同，若相同则不添加
+               error_info = self.r.hget('agv_info','error')
+               if re.search(error_dict[u'哈希表不存在'],error_info) == None:
+                  self.r.hset('agv_info','error',time_now + ': '+error_dict[u'哈希表不存在'])
          
          # 当AGV运行状态为空闲：
          elif currentState == 'IDLE':
-            print('*** Now agv is idle,wait for the command')
-         # 当指令错误时：
+            self.r.hset('agv_info','error','')
+            
+         # 当指令不合法时：
          else:
-            self.r.hset('agv_info','error','Command is wrong')
-         time.sleep(1)
-         
+            error_info = self.r.hget('agv_info','error')
+            if re.search(error_dict[u'非法指令'],error_info) == None:
+               self.r.hset('agv_info','error',time_now + ': '+error_dict[u'非法指令'])
 
 # 初始化client类
 t = client()
+t.redis_info()
