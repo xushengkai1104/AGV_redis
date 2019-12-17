@@ -19,35 +19,54 @@ class client:
 
    def __init__(self):
       # 版本为python 2.7,键盘输入使用raw_input，单纯的input为指令输入
-      password = raw_input('*** Enter cloud password:')
-      self.r = redis.StrictRedis(host=host, port=port, password=password)
+      password = raw_input('*** Enter password:')
+
+      #用db来分别Agv的编号。
+      self.r = redis.StrictRedis(host=host, port=port, db=0, password=password)
+      
+      # timeout 1s
       time.sleep(1)
-      response = self.r.get("QinQin")
-      print(response)
-      cmd_dict = {
-            #当前AGV状态
-            'status': '',
-            #充电时的状态
-            'recharge_state': '',
-            #运行错误，此处应将错误信息保存至本地，并带时间戳
-            'error': '',
-            #设置当前坐标
-            'init_pose': '',
-            #设置目标点坐标×2
-            'set_goal1': '',
-            'set_goal2': '',
-            #当前坐标
-            'current_pose': '',
-            #当前速度
-            'vel_x':'',
-            'ang_z':''
+      
+      info_dict = {
+         # 位姿
+         'position_x':'',
+         'position_y':'',
+         'ori_x':'',
+         'ori_y':'',
+         'ori_z':'',
+         'ori_w':'',
+         # 当前速度
+         'vel_x':'',
+         'ang_z':'',
+         # agv错误码
+         'error':''
             }
-      self.r.hmset('CmdState', cmd_dict)
+      self.r.hmset('agv_info', info_dict)
+      
       im = 1
-      #暂时设置取代rospy.is_shutdown()
+      #暂时设置 im 取代rospy.is_shutdown()
       while im == 1:
-         currentState = self.r.hget('CmdState','status')
-         print(currentState)
+         currentState = self.r.get('Status')
+         print('*** AGV_state is : '+currentState)
+
+         # 当AGV运行状态为运行中：
+         if currentState == 'EXECUTING':
+            if self.r.hexists('ControlCom','point1') == True:
+               point1 = self.r.hget('ControlCom','point1')
+               point2 = self.r.hget('ControlCom','point2')
+               operate = self.r.hget('ControlCom','operate')
+               print(point1,point2,operate)
+               #此条为过渡指令
+               self.r.hset('agv_info','error','')
+            else:
+               self.r.hset('agv_info','error','Hashtable: ControlCom not exist')
+         
+         # 当AGV运行状态为空闲：
+         elif currentState == 'IDLE':
+            print('*** Now agv is idle,wait for the command')
+         # 当指令错误时：
+         else:
+            self.r.hset('agv_info','error','Command is wrong')
          time.sleep(1)
          
 
