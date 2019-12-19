@@ -1,1 +1,3 @@
 No module named redis
+下载python redis 库后pip install 就行了。
+出现这个问题是redis库冲突
