@@ -55,7 +55,7 @@ class client:
       self.r.hset('agv_info','qw',pose.orientation.w)
 
    def setGoal(self,goal_x,goal_y,goal_qz,goal_qw):
-      move_base = actionlib.SimpleActionClient("move_base",MoveBaseAction)
+      move_base = actionlib.SimpleActionClient("move_base",self.MoveBaseAction)
       goal = MoveBaseGoal()
       goal.target_pose.header.frame_id = 'map'
       goal.target_pose.header.stamp = rospy.Time.now()
@@ -113,12 +113,14 @@ class client:
                      goal_y = ptr_list[1]
                      goal_qz = ptr_list[2]
                      goal_qw = ptr_list[3]
+                     self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
                else:
                   ptr_list = self.r.hmget(point1,'x','y','qz','qw')
                   goal_x = ptr_list[0]
                   goal_y = ptr_list[1]
                   goal_qz = ptr_list[2]
                   goal_qw = ptr_list[3]
+                  self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
                   
                operate = self.r.hget('ControlCom','operate')
                self.r.hset('agv_info','error','')
