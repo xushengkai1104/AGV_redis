@@ -96,7 +96,6 @@ class client:
       global last_ptr
       if msg.status.status == 1:
          rospy.loginfo("target accepted")
-         self.r.set('target_ptr',target_ptr)
       elif msg.status.status == 3:
          rospy.loginfo("goal reached")
          if last_ptr != target_ptr:
@@ -143,42 +142,36 @@ class client:
             if self.r.hexists('ControlCom','point1') == True:
                point1 = self.r.hget('ControlCom','point1')
                point2 = self.r.hget('ControlCom','point2')
-               # 如果point1为0000，试着此时是调度系统没有来得及更新，执行第二个点。
-               if point1 == '0000':
-                  if point2 == '0000':
-                     pass
-                     #self.r.set('Status','IDLE')
-                     #self.r.set('target_ptr','0000')
-                  elif target_ptr != point2:
+               targetpoint = self.r.hget('ControlCom','targetPoint')
+
+               if point1 != '0000':               
+                  if last_ptr != point1 and last_ptr != point2 and last_ptr != targetpoint:
+                     target_ptr = point1
+                     ptr_list = self.r.hmget(point1,'x','y','qz','qw')
+                     goal_x = ptr_list[0]
+                     goal_y = ptr_list[1]
+                     goal_qz = ptr_list[2]
+                     goal_qw = ptr_list[3]
+                     self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
+                  elif last_ptr == point1 and last_ptr != point2 and last_ptr != targetpoint:
+                     #未到最终任务点，但点1没有更新，报告错误，并先按备用点2走
                      target_ptr = point2
+                     rospy.loginfo('redis error')
                      ptr_list = self.r.hmget(point2,'x','y','qz','qw')
                      goal_x = ptr_list[0]
                      goal_y = ptr_list[1]
                      goal_qz = ptr_list[2]
                      goal_qw = ptr_list[3]
                      self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
-               elif target_ptr != point1 and last_ptr != point1:
-                  target_ptr = point1
-                  ptr_list = self.r.hmget(point1,'x','y','qz','qw')
-                  goal_x = ptr_list[0]
-                  goal_y = ptr_list[1]
-                  goal_qz = ptr_list[2]
-                  goal_qw = ptr_list[3]
-                  self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
-               #这里需要默认point1和point2一定是不一样的.
-               elif target_ptr != point2 and last_ptr != point2:
-                  target_ptr = point2
-                  ptr_list = self.r.hmget(point2,'x','y','qz','qw')
-                  goal_x = ptr_list[0]
-                  goal_y = ptr_list[1]
-                  goal_qz = ptr_list[2]
-                  goal_qw = ptr_list[3]
-                  self.setGoal(goal_x,goal_y,goal_qz,goal_qw)
-               else :
-                  pass
-                  
-                  
-               operate = self.r.hget('ControlCom','operate')
+                  elif targetpoint == last_ptr:
+                     #任务完成,将AGV状态设为空闲
+                     rospy.loginfo('task finish')
+                     #self.r.set('Status','IDLE')
+                  else:
+                     pass
+                  operate = self.r.hget('ControlCom','operate')
+               else:
+                 last_ptr = '0000'    
             else:
                # 判断与上一条错误消息是否相同，若相同则不添加
                error_info = self.r.hget('agv_info','error')
